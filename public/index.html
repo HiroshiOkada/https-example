@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<title>Stick figure</title>
+
+<style>
+#stick-figure {
+  width: 50%;
+  margin: 0 auto;
+  transform: rotate(0rad);
+  transform-origin: center;
+}
+#message {
+  color: red;
+  font-size: 2rem;
+}
+</style>
+
+</head>
+
+<body>
+
+<svg viewBox="0 0 200 200" id="stick-figure">
+  <g stroke="green" fill="none" stroke-width="5">
+    <circle cx="100" cy="30" r="20" />
+    <line x1="100" y1="50" x2="100" y2="110" />
+    <polyline points="80,190 100,110 120,190" />
+    <polyline points="40,75 100,65 160,75" />
+  </g>
+</svg>
+
+<p id="message"></p>
+
+<script>
+const main = () => {
+  const stickFigure = document.getElementById('stick-figure');
+  const message = document.getElementById('message');
+
+  if (!('Accelerometer' in window)) {
+    message.innerHTML = 'no Accelerometer';
+    return;
+  }
+  navigator.permissions.query({ name: 'accelerometer' }).then(result => {
+    if (result.state !== 'granted') {
+      message.innerHTML = result.state;
+      return;
+    }
+    const acc = new Accelerometer({ frequency: 60 });
+    acc.addEventListener('reading', e => {
+      const { x, y } = acc;
+      const rad = -Math.atan2(y, x) + Math.PI / 2.0;
+      stickFigure.style.transform = `rotate(${rad}rad)`;
+    });
+    acc.start();
+  });
+};
+
+main();
+</script>
+
+</body>
+</html>
